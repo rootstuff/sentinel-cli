@@ -1,8 +1,11 @@
 # Sentinel CLI
 
+[![npm version](https://img.shields.io/npm/v/%40rootstuff%2Fsentinel)](https://www.npmjs.com/package/@rootstuff/sentinel)
+
 Command-line interface for [Sentinel](https://sentinel.rootstuff.io), the uptime monitoring service. Manage monitors, groups, incidents, team members, webhooks, status pages, and notification channels from a terminal or a CI job, and probe any URL from every monitoring region on demand.
 
 Full docs: https://sentinel.rootstuff.io/docs/cli
+On npm: https://www.npmjs.com/package/@rootstuff/sentinel
 
 ## Installation
 
