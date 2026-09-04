@@ -4,7 +4,7 @@
   "description": "Command-line interface for Sentinel uptime monitoring: monitors, incidents, groups, team members, webhooks, status pages, and on-demand global checks.",
   "main": "src/index.js",
   "bin": {
-    "sentinel": "./bin/sentinel.js"
+    "sentinel": "bin/sentinel.js"
   },
   "scripts": {
     "test": "node --test tests/*.test.js"
@@ -19,7 +19,7 @@
     "status-page",
     "incidents"
   ],
-  "author": "Adam Bal\u00e9e",
+  "author": "Adam Balée",
   "license": "MIT",
   "homepage": "https://sentinel.rootstuff.io/docs/cli",
   "repository": {
