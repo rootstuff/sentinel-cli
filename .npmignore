@@ -1,0 +1,12 @@
+node_modules/
+tests/
+*.log
+.DS_Store
+.env
+.env.*
+coverage/
+*.tgz
+.git/
+QUICK_START.md
+EXAMPLES.md
+PUBLISHING.md

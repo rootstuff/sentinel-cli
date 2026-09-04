@@ -1,0 +1,53 @@
+{
+  "name": "@rootstuff/sentinel",
+  "version": "1.0.0",
+  "description": "Command-line interface for Sentinel uptime monitoring: monitors, incidents, groups, team members, webhooks, status pages, and on-demand global checks.",
+  "main": "src/index.js",
+  "bin": {
+    "sentinel": "./bin/sentinel.js"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  },
+  "keywords": [
+    "sentinel",
+    "rootstuff",
+    "monitoring",
+    "uptime",
+    "cli",
+    "website-monitoring",
+    "status-page",
+    "incidents"
+  ],
+  "author": "Adam Bal\u00e9e",
+  "license": "MIT",
+  "homepage": "https://sentinel.rootstuff.io/docs/cli",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rootstuff/sentinel-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rootstuff/sentinel-cli/issues",
+    "email": "adam@rootstuff.io"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "axios": "^1.6.2",
+    "chalk": "^4.1.2",
+    "cli-table3": "^0.6.3",
+    "commander": "^11.1.0",
+    "conf": "^10.2.0",
+    "inquirer": "^8.2.5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
