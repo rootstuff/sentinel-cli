@@ -332,6 +332,37 @@ class ApiClient {
     const response = await this.client.post(`/notification-channels/${channel}/test`);
     return response.data;
   }
+
+  // Operator endpoints (super admin token with the `admin` ability)
+  async adminCadence(params = {}) {
+    const response = await this.client.get('/admin/cadence', { params });
+    return response.data;
+  }
+
+  async adminIncidents(params = {}) {
+    const response = await this.client.get('/admin/incidents', { params });
+    return response.data;
+  }
+
+  async adminFreshness() {
+    const response = await this.client.get('/admin/freshness');
+    return response.data;
+  }
+
+  async adminApiErrors(params = {}) {
+    const response = await this.client.get('/admin/api-errors', { params });
+    return response.data;
+  }
+
+  async adminAbuse(params = {}) {
+    const response = await this.client.get('/admin/abuse', { params });
+    return response.data;
+  }
+
+  async adminFailedJobs(params = {}) {
+    const response = await this.client.get('/admin/failed-jobs', { params });
+    return response.data;
+  }
 }
 
 module.exports = ApiClient;

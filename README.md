@@ -233,6 +233,22 @@ sentinel notifications test slack
 sentinel notifications delete slack --yes
 ```
 
+### admin
+
+Operator reports across every team. These need a super admin account with two-factor on and a token carrying the `admin` ability, which only `php artisan admin:token` on the server can mint. Keep that token in `SENTINEL_ADMIN_TOKEN`; the admin commands prefer it over `SENTINEL_TOKEN`, and `--token` still overrides both.
+
+```bash
+sentinel admin cadence --monitor-id 163 --minutes 10   # checks per region vs expected, with gaps
+sentinel admin cadence --interval 0.5 --limit 50       # sample the 30-second tier
+sentinel admin incidents --hours 2 --contains redirect # incidents by root cause, newest listed
+sentinel admin freshness                               # stale monitors per region + queue waits
+sentinel admin api-errors --hours 24
+sentinel admin abuse
+sentinel admin failed-jobs --hours 12
+```
+
+Every admin command takes `--format json`.
+
 ## Global options
 
 Every command accepts:
@@ -245,6 +261,7 @@ Every command accepts:
 ## Environment variables
 
 - `SENTINEL_TOKEN`: API token
+- `SENTINEL_ADMIN_TOKEN`: operator token for the `admin` commands (see above)
 - `SENTINEL_API_URL`: API base URL (default `https://sentinel.rootstuff.io`)
 - `SENTINEL_CONFIG_DIR`: directory for the config file (handy on CI runners)
 

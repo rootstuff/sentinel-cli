@@ -9,6 +9,7 @@ const createTeamsCommands = require('./commands/teams');
 const createWebhooksCommands = require('./commands/webhooks');
 const createStatusPagesCommands = require('./commands/status-pages');
 const createNotificationsCommands = require('./commands/notifications');
+const createAdminCommands = require('./commands/admin');
 
 const packageJson = require('../package.json');
 
@@ -31,6 +32,7 @@ function createCli() {
   program.addCommand(createWebhooksCommands());
   program.addCommand(createStatusPagesCommands());
   program.addCommand(createNotificationsCommands());
+  program.addCommand(createAdminCommands());
 
   // Show help if no command provided
   if (process.argv.length <= 2) {
