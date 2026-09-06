@@ -45,7 +45,7 @@ test('admin cadence --format json', async () => {
 });
 
 test('admin prefers SENTINEL_ADMIN_TOKEN over the everyday token', async () => {
-  stub.setRoutes({ 'GET /api/v1/admin/freshness': { body: { generated_at: 'x', regions: { ash: { monitors: 70, stale: 0, oldest_lag_seconds: 12 } }, queue_wait_seconds: { 'monitor-ash': 1 } } } });
+  stub.setRoutes({ 'GET /api/v1/admin/freshness': { body: { generated_at: 'x', regions: { ash: { monitors: 70, stale: 1, oldest_lag_seconds: 199275, stale_monitors: [{ monitor_id: 42, url: 'https://forgotten.example', check_interval_seconds: 60, last_checked_at: '2026-09-03T20:00:00+00:00', lag_seconds: 199275 }] } }, queue_wait_seconds: { 'monitor-ash': 1 } } } });
 
   const result = await runCli(['admin', 'freshness'], { stub, env: { SENTINEL_ADMIN_TOKEN: 'operator-token' } });
 
@@ -53,6 +53,7 @@ test('admin prefers SENTINEL_ADMIN_TOKEN over the everyday token', async () => {
   assert.equal(stub.lastRequest().headers.authorization, 'Bearer operator-token');
   assert.match(result.stdout, /Region freshness/);
   assert.match(result.stdout, /monitor-ash/);
+  assert.match(result.stdout, /forgotten\.example/);
 });
 
 test('--token still beats SENTINEL_ADMIN_TOKEN', async () => {

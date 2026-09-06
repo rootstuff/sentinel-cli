@@ -247,6 +247,11 @@ function createAdminCommands() {
 
     console.log(chalk.cyan.bold('\nRegion freshness:\n'));
     console.log(formatFreshnessTable(report));
+    Object.entries(report.regions).forEach(([region, stats]) => {
+      (stats.stale_monitors || []).forEach(row => {
+        console.log(chalk.yellow(`  ${region}: monitor ${row.monitor_id} ${row.url} last checked ${row.last_checked_at} (${row.lag_seconds}s ago, interval ${row.check_interval_seconds}s)`));
+      });
+    });
     console.log(chalk.cyan.bold('\nQueue waits:\n'));
     console.log(formatQueueWaits(report.queue_wait_seconds));
   }));
