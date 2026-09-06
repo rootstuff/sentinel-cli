@@ -108,6 +108,10 @@ Create and update accept the whole monitor field set:
 | `--json-assertion-settings` | `json_assertion_settings` | JSON |
 | `--payment-settings` | `payment_settings` | JSON |
 | `--lighthouse-settings` | `lighthouse_settings` | JSON |
+| `--alerts` | `notification_settings.enabled` | `on` or `off` |
+| `--channels` | `notification_settings.channels` | `email=critical+warning,slack=critical`; replaces the stored channels |
+| `--quiet-hours` | `notification_settings.quiet_hours` | `HH:MM-HH:MM@Timezone` or `off`; add `--no-bypass-critical` to hold critical alerts too |
+| `--notification-settings` | `notification_settings` | JSON, the full block; shorthand flags layer over it |
 | `--port` | `port` | Port monitors |
 | `--heartbeat-interval` | `heartbeat_interval` | Seconds, heartbeat monitors |
 | `--cron-expression` | `heartbeat_cron_expression` | Cron monitors |
@@ -137,7 +141,14 @@ sentinel monitors create --type cron --name "Reports" --cron-expression "0 6 * *
 
 # Port monitor
 sentinel monitors create --type port --url db.example.com --port 5432
+
+# Alert routing: which channels fire at which severity, and a nightly quiet window
+sentinel monitors update 42 --channels email=critical+warning,slack=critical+warning+info,sms=critical \
+  --quiet-hours 23:00-06:00@America/Los_Angeles
+sentinel monitors update 42 --alerts off
 ```
+
+Severities: `critical` is down (failed ping, port, JSON and payment checks, a missed heartbeat) and an expired or invalid certificate or domain; `warning` is a slow response, an expiring certificate or domain, a DNS error, and keyword, server-error and Lighthouse failures; `info` is recovery, resolution and DNS changes. If none of the listed channels covers a severity, alerts at that severity fall back to each member's own preferences rather than going silent. Custom recipients are managed in the dashboard only.
 
 `monitors update` only changes the flags you pass. It reads the monitor first so required fields (URL, active sub-check settings, push schedule) travel with the request. One thing to know: the API's full update does not carry the monitor's tags, so an update from the CLI leaves the monitor's tags empty. Re-apply tags in the dashboard if you use them.
 

@@ -306,3 +306,58 @@ test('a 403 plan limit on create is surfaced with the API message', async () => 
   assert.equal(result.code, 1);
   assert.match(result.stderr, /API Error \(403\): This team has reached the monitor limit/);
 });
+
+test('monitors create turns the routing shorthand into a notification_settings block', async () => {
+  stub.setRoutes({ 'POST /api/v1/monitors': { status: 201, body: monitor } });
+
+  const result = await runCli([
+    'monitors', 'create', '--url', 'https://example.com',
+    '--alerts', 'on',
+    '--channels', 'email=critical+warning, slack=critical, sms=',
+    '--quiet-hours', '22:00-07:00@America/New_York', '--no-bypass-critical'
+  ], { stub });
+
+  assert.equal(result.code, 0, result.stderr);
+  assert.deepEqual(stub.lastRequest().body.notification_settings, {
+    enabled: true,
+    channels: { email: ['critical', 'warning'], slack: ['critical'], sms: [] },
+    quiet_hours: { enabled: true, start: '22:00', end: '07:00', timezone: 'America/New_York', bypass_critical: false }
+  });
+});
+
+test('monitors update sends only the routing blocks given, with the JSON block underneath', async () => {
+  stub.setRoutes({
+    'GET /api/v1/monitors/1': { status: 200, body: monitor },
+    'PUT /api/v1/monitors/1': { status: 200, body: monitor }
+  });
+
+  let result = await runCli(['monitors', 'update', '1', '--quiet-hours', 'off'], { stub });
+  assert.equal(result.code, 0, result.stderr);
+  let body = stub.lastRequest().body;
+  assert.equal(body.url, monitor.url);
+  assert.deepEqual(body.notification_settings, { quiet_hours: { enabled: false } });
+
+  result = await runCli([
+    'monitors', 'update', '1',
+    '--notification-settings', '{"enabled":true,"channels":{"webhook":["critical"]}}',
+    '--alerts', 'off'
+  ], { stub });
+  assert.equal(result.code, 0, result.stderr);
+  body = stub.lastRequest().body;
+  assert.deepEqual(body.notification_settings, { enabled: false, channels: { webhook: ['critical'] } });
+});
+
+test('monitors update rejects bad routing flags before calling the API', async () => {
+  stub.setRoutes({});
+
+  for (const args of [
+    ['--channels', 'pager=critical'],
+    ['--channels', 'email=urgent'],
+    ['--quiet-hours', '10pm-6am'],
+    ['--alerts', 'maybe']
+  ]) {
+    const result = await runCli(['monitors', 'update', '1', ...args], { stub });
+    assert.equal(result.code, 1, args.join(' '));
+  }
+  assert.equal(stub.requests.length, 0);
+});

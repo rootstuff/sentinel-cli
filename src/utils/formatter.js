@@ -150,6 +150,22 @@ function formatMonitorDetails(monitor) {
     details.push(['Check Types', monitor.check_types.join(', ')]);
   }
 
+  // Only tokens with write access see routing; read-only tokens get nothing here.
+  if (monitor.notification_settings && typeof monitor.notification_settings === 'object') {
+    const routing = monitor.notification_settings;
+    if (routing.enabled !== undefined) details.push(['Alerts', routing.enabled ? 'on' : chalk.yellow('off')]);
+    const channels = routing.channels && !Array.isArray(routing.channels) ? routing.channels : {};
+    const channelSummary = Object.entries(channels)
+      .map(([channel, severities]) => `${channel}=${(severities || []).join('+') || 'silent'}`)
+      .join(', ');
+    if (channelSummary) details.push(['Alert Channels', channelSummary]);
+    const quiet = routing.quiet_hours;
+    if (quiet && quiet.enabled) {
+      const window = `${quiet.start || '?'}-${quiet.end || '?'}${quiet.timezone ? ` ${quiet.timezone}` : ''}`;
+      details.push(['Quiet Hours', `${window}${quiet.bypass_critical === false ? ' (critical held too)' : ''}`]);
+    }
+  }
+
   if (monitor.ssl_expiry_threshold) {
     details.push(['SSL Expiry Threshold', `${monitor.ssl_expiry_threshold} days`]);
   }

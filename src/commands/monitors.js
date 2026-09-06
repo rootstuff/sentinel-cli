@@ -17,6 +17,60 @@ const ApiClient = require('../api/client');
 
 const PUSH_TYPES = ['heartbeat', 'cron'];
 
+const NOTIFICATION_CHANNELS = ['email', 'sms', 'slack', 'discord', 'teams', 'webhook', 'database'];
+const SEVERITIES = ['critical', 'warning', 'info'];
+
+/**
+ * "email=critical+warning,slack=critical" -> { email: [...], slack: [...] }.
+ * A channel given without severities ("sms=") is listed but silent. The
+ * whole map replaces the monitor's stored channels, so name every channel
+ * that should fire.
+ */
+function parseChannelsFlag(value) {
+  const channels = {};
+
+  value.split(',').map(part => part.trim()).filter(Boolean).forEach(part => {
+    const [channel, severities = ''] = part.split('=').map(piece => piece.trim());
+    if (!NOTIFICATION_CHANNELS.includes(channel)) {
+      throw new Error(`Unknown channel "${channel}" in --channels. Use: ${NOTIFICATION_CHANNELS.join(', ')}`);
+    }
+    const list = severities.split('+').map(piece => piece.trim()).filter(Boolean);
+    list.forEach(severity => {
+      if (!SEVERITIES.includes(severity)) {
+        throw new Error(`Unknown severity "${severity}" in --channels. Use: ${SEVERITIES.join(', ')}`);
+      }
+    });
+    channels[channel] = list;
+  });
+
+  if (Object.keys(channels).length === 0) {
+    throw new Error('--channels needs at least one channel, e.g. email=critical+warning,slack=critical');
+  }
+
+  return channels;
+}
+
+/**
+ * "22:00-07:00@America/New_York" (timezone optional) or "off". Critical
+ * alerts still get through during the window unless --no-bypass-critical.
+ */
+function parseQuietHoursFlag(value, bypassCritical) {
+  if (value.trim().toLowerCase() === 'off') {
+    return { enabled: false };
+  }
+
+  const match = value.trim().match(/^(\d{2}:\d{2})-(\d{2}:\d{2})(?:@(\S+))?$/);
+  if (!match) {
+    throw new Error('--quiet-hours expects HH:MM-HH:MM, optionally @Timezone (e.g. 22:00-07:00@America/New_York), or "off"');
+  }
+
+  const quiet = { enabled: true, start: match[1], end: match[2] };
+  if (match[3]) quiet.timezone = match[3];
+  if (bypassCritical !== undefined) quiet.bypass_critical = bypassCritical;
+
+  return quiet;
+}
+
 // Sub-checks whose rules live in a settings object; the object must travel
 // with the check type or the API rejects the update.
 const SETTINGS_BY_CHECK_TYPE = {
@@ -52,6 +106,11 @@ function addMonitorOptions(command) {
     .option('--json-assertion-settings <json>', 'JSON assertions, e.g. \'{"assertions":[{"path":"status","operator":"equals","value":"ok"}]}\'')
     .option('--payment-settings <json>', 'Agent payment (402) expectations, e.g. \'{"expected":{"amount":"0.02","pay_to":"0x...","network":"eip155:8453"}}\'')
     .option('--lighthouse-settings <json>', 'Lighthouse strategies and score thresholds as JSON')
+    .option('--alerts <on|off>', 'Turn alerting for this monitor on or off')
+    .option('--channels <spec>', 'Alert channels by severity, e.g. email=critical+warning,slack=critical (replaces the stored channels)')
+    .option('--quiet-hours <spec>', 'Hold alerts daily: HH:MM-HH:MM@Timezone (e.g. 22:00-07:00@America/New_York), or "off"')
+    .option('--no-bypass-critical', 'Hold critical alerts during quiet hours too (with --quiet-hours)')
+    .option('--notification-settings <json>', 'Full routing block as JSON: {"enabled":true,"channels":{...},"quiet_hours":{...}}')
     .option('--port <number>', 'TCP port (port monitors)')
     .option('--heartbeat-interval <seconds>', 'Expected ping interval in seconds (heartbeat monitors)')
     .option('--cron-expression <expression>', 'Expected schedule (cron monitors)')
@@ -87,6 +146,21 @@ function payloadFromOptions(options) {
   if (options.jsonAssertionSettings !== undefined) data.json_assertion_settings = parseJsonFlag(options.jsonAssertionSettings, '--json-assertion-settings');
   if (options.paymentSettings !== undefined) data.payment_settings = parseJsonFlag(options.paymentSettings, '--payment-settings');
   if (options.lighthouseSettings !== undefined) data.lighthouse_settings = parseJsonFlag(options.lighthouseSettings, '--lighthouse-settings');
+
+  // Routing: the JSON block first, then the shorthand flags layered over it.
+  // Each block sent replaces the stored one; blocks left out stay as they are.
+  const routing = options.notificationSettings !== undefined
+    ? parseJsonFlag(options.notificationSettings, '--notification-settings')
+    : {};
+  if (options.alerts !== undefined) {
+    if (!['on', 'off'].includes(options.alerts)) throw new Error('--alerts expects "on" or "off"');
+    routing.enabled = options.alerts === 'on';
+  }
+  if (options.channels !== undefined) routing.channels = parseChannelsFlag(options.channels);
+  if (options.quietHours !== undefined) {
+    routing.quiet_hours = parseQuietHoursFlag(options.quietHours, options.bypassCritical === false ? false : undefined);
+  }
+  if (Object.keys(routing).length > 0) data.notification_settings = routing;
   if (options.port !== undefined) data.port = parseInt(options.port, 10);
   if (options.heartbeatInterval !== undefined) data.heartbeat_interval = parseInt(options.heartbeatInterval, 10);
   if (options.cronExpression !== undefined) data.heartbeat_cron_expression = options.cronExpression;
@@ -372,5 +446,7 @@ function createMonitorsCommands() {
 }
 
 module.exports = createMonitorsCommands;
+module.exports.parseChannelsFlag = parseChannelsFlag;
+module.exports.parseQuietHoursFlag = parseQuietHoursFlag;
 module.exports.buildUpdatePayload = buildUpdatePayload;
 module.exports.payloadFromOptions = payloadFromOptions;
