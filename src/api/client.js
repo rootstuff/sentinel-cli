@@ -363,6 +363,31 @@ class ApiClient {
     const response = await this.client.get('/admin/failed-jobs', { params });
     return response.data;
   }
+
+  async adminMonitors(params = {}) {
+    const response = await this.client.get('/admin/monitors', { params });
+    return response.data;
+  }
+
+  async adminMonitor(id) {
+    const response = await this.client.get(`/admin/monitors/${id}`);
+    return response.data;
+  }
+
+  async adminAccount(params = {}) {
+    const response = await this.client.get('/admin/account', { params });
+    return response.data;
+  }
+
+  async adminQueues() {
+    const response = await this.client.get('/admin/queues');
+    return response.data;
+  }
+
+  async adminSignups(params = {}) {
+    const response = await this.client.get('/admin/signups', { params });
+    return response.data;
+  }
 }
 
 module.exports = ApiClient;

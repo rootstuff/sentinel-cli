@@ -245,6 +245,11 @@ sentinel admin freshness                               # stale monitors per regi
 sentinel admin api-errors --hours 24
 sentinel admin abuse
 sentinel admin failed-jobs --hours 12
+sentinel admin monitors --host vbotickets.com --status offline   # find monitors in any team
+sentinel admin monitor 163                                       # one monitor, per-region checks, incidents
+sentinel admin account --email gabriel@vbotickets.com            # or --user-id / --team-id
+sentinel admin queues                                            # depth, oldest pending, workers per box
+sentinel admin signups --hours 24                                # new accounts + blocked attempts
 ```
 
 Every admin command takes `--format json`.
