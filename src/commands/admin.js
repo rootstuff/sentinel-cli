@@ -501,6 +501,32 @@ function createAdminCommands() {
     }
   }));
 
+  withCommonOptions(
+    admin.command('health')
+      .description('The platform watchdog\'s signals right now, healthy or not, with values and thresholds')
+  ).action(runAction(async (options) => {
+    const client = new ApiClient(operatorOptions(options));
+    const report = await client.adminHealth();
+
+    if (options.format === 'json') {
+      console.log(formatOutput(report, 'json'));
+      return;
+    }
+
+    console.log(report.healthy
+      ? chalk.green.bold('\nAll signals healthy.\n')
+      : chalk.red.bold(`\n${report.unhealthy_count} unhealthy signal(s).\n`));
+    const table = new Table({ head: ['Signal', 'State', 'Value', 'Threshold'].map(h => chalk.cyan(h)), colWidths: [28, 10, 34, 34] });
+    report.signals.forEach(s => {
+      table.push([s.name, s.ok ? chalk.green('ok') : chalk.red('unhealthy'), s.value, s.detail]);
+    });
+    console.log(table.toString());
+
+    if (!report.healthy) {
+      process.exitCode = 1;
+    }
+  }));
+
   return admin;
 }
 

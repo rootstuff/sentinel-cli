@@ -250,6 +250,7 @@ sentinel admin monitor 163                                       # one monitor, 
 sentinel admin account --email gabriel@vbotickets.com            # or --user-id / --team-id
 sentinel admin queues                                            # depth, oldest pending, workers per box
 sentinel admin signups --hours 24                                # new accounts + blocked attempts
+sentinel admin health                                            # the watchdog's signals; exits 1 if any is unhealthy
 ```
 
 Every admin command takes `--format json`.

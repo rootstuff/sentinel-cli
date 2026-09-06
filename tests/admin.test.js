@@ -197,3 +197,18 @@ test('admin queues and signups render', async () => {
   assert.match(result.stdout, /new@example\.com/);
   assert.match(result.stdout, /blocked_honeypot/);
 });
+
+test('admin health renders the signals and exits 1 when one is unhealthy', async () => {
+  stub.setRoutes({ 'GET /api/v1/admin/health': { body: { generated_at: 'x', healthy: false, unhealthy_count: 1, signals: [
+    { name: 'primary checks', ok: true, value: 'none stale', detail: 'stale = unchecked for 3x interval' },
+    { name: 'queue monitor-nbg', ok: false, value: '475 pending', detail: 'warn above 200' }
+  ] } } });
+
+  const result = await runCli(['admin', 'health'], { stub });
+
+  assert.equal(result.code, 1);
+  assertRequest(stub.lastRequest(), 'GET', '/api/v1/admin/health');
+  assert.match(result.stdout, /1 unhealthy signal/);
+  assert.match(result.stdout, /queue monitor-nbg/);
+  assert.match(result.stdout, /475 pending/);
+});

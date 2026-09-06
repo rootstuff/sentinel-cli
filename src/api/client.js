@@ -388,6 +388,11 @@ class ApiClient {
     const response = await this.client.get('/admin/signups', { params });
     return response.data;
   }
+
+  async adminHealth() {
+    const response = await this.client.get('/admin/health');
+    return response.data;
+  }
 }
 
 module.exports = ApiClient;
