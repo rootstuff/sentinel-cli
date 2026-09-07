@@ -109,7 +109,7 @@ Create and update accept the whole monitor field set:
 | `--payment-settings` | `payment_settings` | JSON |
 | `--lighthouse-settings` | `lighthouse_settings` | JSON |
 | `--alerts` | `notification_settings.enabled` | `on` or `off` |
-| `--channels` | `notification_settings.channels` | `email=critical+warning,slack=critical`; replaces the stored channels |
+| `--channels` | `notification_settings.channels` | `email=critical+warning,slack=critical,in_app=critical+warning+info`; replaces the stored channels |
 | `--quiet-hours` | `notification_settings.quiet_hours` | `HH:MM-HH:MM@Timezone` or `off`; add `--no-bypass-critical` to hold critical alerts too |
 | `--notification-settings` | `notification_settings` | JSON, the full block; shorthand flags layer over it |
 | `--port` | `port` | Port monitors |
@@ -148,7 +148,7 @@ sentinel monitors update 42 --channels email=critical+warning,slack=critical+war
 sentinel monitors update 42 --alerts off
 ```
 
-Severities: `critical` is down (failed ping, port, JSON and payment checks, a missed heartbeat) and an expired or invalid certificate or domain; `warning` is a slow response, an expiring certificate or domain, a DNS error, and keyword, server-error and Lighthouse failures; `info` is recovery, resolution and DNS changes. If none of the listed channels covers a severity, alerts at that severity fall back to each member's own preferences rather than going silent. Custom recipients are managed in the dashboard only.
+Severities: `critical` is down (failed ping, port, JSON and payment checks, a missed heartbeat) and an expired or invalid certificate or domain; `warning` is a slow response, an expiring certificate or domain, a DNS error, and keyword, server-error and Lighthouse failures; `info` is recovery, resolution and DNS changes. Channels: `email`, `sms`, `slack`, `discord`, `teams`, `webhook`, `in_app` (the bell inside the dashboard, shown by the API under its stored name `database`). If none of the listed channels covers a severity, alerts at that severity fall back to each member's own preferences rather than going silent. Custom recipients are managed in the dashboard only.
 
 `monitors update` only changes the flags you pass. It reads the monitor first so required fields (URL, active sub-check settings, push schedule) travel with the request. One thing to know: the API's full update does not carry the monitor's tags, so an update from the CLI leaves the monitor's tags empty. Re-apply tags in the dashboard if you use them.
 

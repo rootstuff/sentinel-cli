@@ -361,3 +361,15 @@ test('monitors update rejects bad routing flags before calling the API', async (
   }
   assert.equal(stub.requests.length, 0);
 });
+
+test('monitors channels accept in_app and get shows the stored database key as in_app', async () => {
+  stub.setRoutes({
+    'POST /api/v1/monitors': { status: 201, body: { ...monitor, notification_settings: { enabled: true, channels: { database: ['critical'] } } } }
+  });
+
+  const result = await runCli(['monitors', 'create', '--url', 'https://example.com', '--channels', 'in_app=critical'], { stub });
+
+  assert.equal(result.code, 0, result.stderr);
+  assert.deepEqual(stub.lastRequest().body.notification_settings, { channels: { in_app: ['critical'] } });
+  assert.match(result.stdout, /in_app=critical/);
+});

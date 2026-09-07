@@ -17,7 +17,9 @@ const ApiClient = require('../api/client');
 
 const PUSH_TYPES = ['heartbeat', 'cron'];
 
-const NOTIFICATION_CHANNELS = ['email', 'sms', 'slack', 'discord', 'teams', 'webhook', 'database'];
+// in_app is the dashboard bell; the API stores and returns it as 'database'
+// (its legacy name) and accepts either on write.
+const NOTIFICATION_CHANNELS = ['email', 'sms', 'slack', 'discord', 'teams', 'webhook', 'in_app', 'database'];
 const SEVERITIES = ['critical', 'warning', 'info'];
 
 /**
@@ -107,7 +109,7 @@ function addMonitorOptions(command) {
     .option('--payment-settings <json>', 'Agent payment (402) expectations, e.g. \'{"expected":{"amount":"0.02","pay_to":"0x...","network":"eip155:8453"}}\'')
     .option('--lighthouse-settings <json>', 'Lighthouse strategies and score thresholds as JSON')
     .option('--alerts <on|off>', 'Turn alerting for this monitor on or off')
-    .option('--channels <spec>', 'Alert channels by severity, e.g. email=critical+warning,slack=critical (replaces the stored channels)')
+    .option('--channels <spec>', 'Alert channels by severity, e.g. email=critical+warning,slack=critical,in_app=critical+warning+info (replaces the stored channels)')
     .option('--quiet-hours <spec>', 'Hold alerts daily: HH:MM-HH:MM@Timezone (e.g. 22:00-07:00@America/New_York), or "off"')
     .option('--no-bypass-critical', 'Hold critical alerts during quiet hours too (with --quiet-hours)')
     .option('--notification-settings <json>', 'Full routing block as JSON: {"enabled":true,"channels":{...},"quiet_hours":{...}}')

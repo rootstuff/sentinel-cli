@@ -156,7 +156,7 @@ function formatMonitorDetails(monitor) {
     if (routing.enabled !== undefined) details.push(['Alerts', routing.enabled ? 'on' : chalk.yellow('off')]);
     const channels = routing.channels && !Array.isArray(routing.channels) ? routing.channels : {};
     const channelSummary = Object.entries(channels)
-      .map(([channel, severities]) => `${channel}=${(severities || []).join('+') || 'silent'}`)
+      .map(([channel, severities]) => `${channel === 'database' ? 'in_app' : channel}=${(severities || []).join('+') || 'silent'}`)
       .join(', ');
     if (channelSummary) details.push(['Alert Channels', channelSummary]);
     const quiet = routing.quiet_hours;
