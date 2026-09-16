@@ -244,6 +244,18 @@ sentinel notifications test slack
 sentinel notifications delete slack --yes
 ```
 
+### billing
+
+Billing is your own account's (the plan owner's), not a team's. Recipients get every paid invoice as a PDF; information is what prints on the invoice and is pushed to Stripe.
+
+```bash
+sentinel billing get
+sentinel billing recipients accounting@example.com ap@example.com   # replaces the list, up to five
+sentinel billing recipients --clear
+sentinel billing information --company "Example Company LLC" --line1 "1 Main St" --city Sacramento --state CA --postal-code 95814 --country US --tax-id-type us_ein --tax-id 12-3456789
+sentinel billing info --company "Example Company LLC"                # fields you omit are cleared
+```
+
 ### admin
 
 Operator reports across every team. These need a super admin account with two-factor on and a token carrying the `admin` ability, which only `php artisan admin:token` on the server can mint. Keep that token in `SENTINEL_ADMIN_TOKEN`; the admin commands prefer it over `SENTINEL_TOKEN`, and `--token` still overrides both.

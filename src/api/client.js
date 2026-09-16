@@ -143,6 +143,16 @@ class ApiClient {
   }
 
   // Monitor group endpoints
+  async getBilling() {
+    const response = await this.client.get('/billing');
+    return response.data;
+  }
+
+  async updateBilling(data) {
+    const response = await this.client.put('/billing', data);
+    return response.data;
+  }
+
   async listGroups() {
     const response = await this.client.get('/groups');
     return response.data;
