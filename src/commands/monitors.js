@@ -19,7 +19,7 @@ const PUSH_TYPES = ['heartbeat', 'cron'];
 
 // in_app is the dashboard bell; the API stores and returns it as 'database'
 // (its legacy name) and accepts either on write.
-const NOTIFICATION_CHANNELS = ['email', 'sms', 'slack', 'discord', 'teams', 'webhook', 'in_app', 'database'];
+const NOTIFICATION_CHANNELS = ['email', 'sms', 'slack', 'discord', 'teams', 'webhook', 'pagerduty', 'telegram', 'in_app', 'database'];
 const SEVERITIES = ['critical', 'warning', 'info'];
 
 /**
