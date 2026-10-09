@@ -22,7 +22,7 @@ sentinel monitors list
 sentinel check https://example.com
 
 # Two regions, shorter timeout
-sentinel check https://example.com --regions ash,nbg --timeout 10
+sentinel check https://example.com --regions us-east,eu-central --timeout 10
 
 # Tolerate one region being down
 sentinel check https://example.com --allow-partial
@@ -56,7 +56,7 @@ sentinel monitors create --url https://example.com --interval 1
 
 # HTTP with SSL and DNS sub-checks from two regions
 sentinel monitors create --url https://example.com --interval 5 \
-  --check-types ssl,dns --regions ash,nbg --ssl-threshold 30
+  --check-types ssl,dns --regions us-east,eu-central --ssl-threshold 30
 
 # POST with headers and a body, accept 2xx only
 sentinel monitors create --url https://api.example.com/ping --method POST \
@@ -96,7 +96,7 @@ sentinel monitors create --url https://example.com --group-id 3
 ```bash
 sentinel monitors update 123 --interval 0.5
 sentinel monitors update 123 --url https://new.example.com
-sentinel monitors update 123 --regions ash,pdx,nbg,sin
+sentinel monitors update 123 --regions us-east,us-west,eu-central,ap-southeast
 sentinel monitors update 123 --group-id none
 sentinel monitors update 123 --no-follow-redirects --timeout 10
 sentinel monitors update 123 --check-types ssl,payment \

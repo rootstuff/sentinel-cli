@@ -248,7 +248,7 @@ function formatGlobalCheck(result) {
 
   const table = new Table({
     head: ['Region', 'Location', 'Status', 'Code', 'Total', 'DNS', 'TCP', 'TLS', 'TTFB', 'Error'].map(h => chalk.cyan(h)),
-    colWidths: [8, 18, 10, 6, 9, 8, 8, 8, 8, 24]
+    colWidths: [14, 18, 10, 6, 9, 8, 8, 8, 8, 24]
   });
 
   (result.results || []).forEach(region => {

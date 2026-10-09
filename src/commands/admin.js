@@ -27,7 +27,7 @@ function seconds(value) {
 function formatCadenceTable(report) {
   const table = new Table({
     head: ['Monitor', 'URL', 'Region', 'Checks', 'Expected', 'Max gap', 'Mean gap'].map(h => chalk.cyan(h)),
-    colWidths: [9, 42, 8, 8, 10, 9, 10]
+    colWidths: [9, 42, 14, 8, 10, 9, 10]
   });
 
   report.monitors.forEach(monitor => {
@@ -77,7 +77,7 @@ function formatLatestIncidents(report) {
 function formatFreshnessTable(report) {
   const table = new Table({
     head: ['Region', 'Monitors', 'Stale', 'Oldest lag'].map(h => chalk.cyan(h)),
-    colWidths: [10, 10, 8, 12]
+    colWidths: [14, 10, 8, 12]
   });
 
   Object.entries(report.regions).forEach(([region, stats]) => {
@@ -380,7 +380,7 @@ function createAdminCommands() {
     console.log(`Team ${detail.team_name || detail.team_id}, owner ${detail.owner_email || '-'}, ${detail.check_interval_seconds}s ${detail.type}, status ${detail.status}${detail.is_paused ? ' (paused)' : ''}${detail.safe_browsing_threat ? chalk.red(`, flagged ${detail.safe_browsing_threat}`) : ''}`);
     console.log(`Method ${detail.config.method}, timeout ${detail.config.request_timeout_seconds}s, redirects ${detail.config.follow_redirects ? 'followed' : 'not followed'}, checks ${(detail.config.check_types || []).join(', ') || 'uptime'}${detail.config.has_request_headers ? ', custom headers' : ''}${detail.config.auth_type ? `, auth ${detail.config.auth_type}` : ''}`);
 
-    const regions = new Table({ head: ['Region', 'Last check', 'Lag', 'Code', 'Time', 'Error'].map(h => chalk.cyan(h)), colWidths: [8, 27, 8, 6, 9, 40] });
+    const regions = new Table({ head: ['Region', 'Last check', 'Lag', 'Code', 'Time', 'Error'].map(h => chalk.cyan(h)), colWidths: [14, 27, 8, 6, 9, 40] });
     Object.entries(detail.regions).forEach(([region, r]) => {
       const c = r.latest_check || {};
       regions.push([region, r.last_checked_at || '-', seconds(r.lag_seconds), c.status_code ?? '-', c.response_time_ms != null ? `${c.response_time_ms}ms` : '-', c.error || '-']);
@@ -459,7 +459,7 @@ function createAdminCommands() {
     }
 
     console.log(chalk.cyan.bold('\nQueues:\n'));
-    const table = new Table({ head: ['Queue', 'Pending', 'Delayed', 'Reserved', 'Oldest', 'Workers'].map(h => chalk.cyan(h)), colWidths: [22, 9, 9, 10, 9, 40] });
+    const table = new Table({ head: ['Queue', 'Pending', 'Delayed', 'Reserved', 'Oldest', 'Workers'].map(h => chalk.cyan(h)), colWidths: [28, 9, 9, 10, 9, 40] });
     Object.entries(report.queues).forEach(([queue, q]) => {
       const workers = Object.entries(q.workers || {}).map(([box, n]) => `${box}:${n}`).join(' ') || '-';
       const pending = q.pending == null ? '-' : (q.pending > 50 ? chalk.red(q.pending) : q.pending);

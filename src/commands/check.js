@@ -19,7 +19,7 @@ function createCheckCommand() {
   const check = new Command('check')
     .description('Probe a URL from every monitoring region right now (no monitor created)')
     .argument('<url>', 'URL to check')
-    .option('--regions <codes>', 'Comma-separated region codes to probe (ash, pdx, nbg, sin); default all')
+    .option('--regions <codes>', 'Comma-separated regions to probe (us-east, us-west, eu-central, ap-southeast; older names like ash still work); default all')
     .option('--timeout <seconds>', 'Per-region timeout in seconds (1-30)', '15')
     .option('--allow-partial', 'Exit 0 when at least one region reaches the URL');
 

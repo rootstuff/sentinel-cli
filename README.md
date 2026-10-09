@@ -58,7 +58,7 @@ On-demand global check. Probes a URL from every monitoring region right now with
 
 ```bash
 sentinel check https://example.com
-sentinel check https://example.com --regions ash,nbg --timeout 10
+sentinel check https://example.com --regions us-east,eu-central --timeout 10
 sentinel check https://example.com --allow-partial      # exit 0 if at least one region reached it
 sentinel check https://example.com --format json
 ```
@@ -93,7 +93,7 @@ Create and update accept the whole monitor field set:
 | `--name` | `friendly_name` | Required for heartbeat and cron monitors |
 | `--interval` | `check_interval` | Minutes, 0.5 to 60 |
 | `--check-types` | `check_types` | Comma list: ssl,dns,domain,keyword,json,lighthouse,payment |
-| `--regions` | `monitored_regions` | Comma list: ash,pdx,nbg,sin |
+| `--regions` | `monitored_regions` | Comma list: us-east,us-west,eu-central,ap-southeast (older ash,pdx,nbg,sin still work) |
 | `--group-id` | `group_id` | Group ID, or `none` to ungroup |
 | `--method` | `http_method` | GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS |
 | `--accepted-status-codes` | `accepted_status_codes` | Comma list, e.g. `200,201,3xx` |

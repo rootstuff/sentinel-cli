@@ -92,7 +92,7 @@ function addMonitorOptions(command) {
     .option('--name <name>', 'Friendly name (required for heartbeat/cron monitors)')
     .option('--interval <minutes>', 'Check interval in minutes; 0.5 = every 30 seconds (plan floor applies)')
     .option('--check-types <types>', 'Comma-separated sub-checks: ssl,dns,domain,keyword,json,lighthouse,payment')
-    .option('--regions <codes>', 'Comma-separated regions to check from: ash,pdx,nbg,sin (default all)')
+    .option('--regions <codes>', 'Comma-separated regions to check from: us-east,us-west,eu-central,ap-southeast (older names like ash still work; default all)')
     .option('--group-id <id>', 'Monitor group ID, or "none" to ungroup')
     .option('--method <method>', 'HTTP method (GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS)')
     .option('--accepted-status-codes <codes>', 'Comma-separated codes that count as up, e.g. 200,201,3xx')
