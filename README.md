@@ -117,6 +117,7 @@ Create and update accept the whole monitor field set:
 | `--cron-expression` | `heartbeat_cron_expression` | Cron monitors |
 | `--heartbeat-timezone` | `heartbeat_timezone` | |
 | `--heartbeat-grace` | `heartbeat_grace` | Seconds |
+| `--confirmation-seconds` | `confirmation_seconds` | Seconds the outage must hold across regions before an incident opens (0-300, 0 = at once) |
 
 Examples:
 

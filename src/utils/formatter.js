@@ -125,6 +125,9 @@ function formatMonitorDetails(monitor) {
     if (monitor.ping_url) details.push(['Ping URL', monitor.ping_url]);
   } else {
     details.push(['Check Interval', formatInterval(monitor.check_interval)]);
+    if (monitor.confirmation_seconds !== undefined && monitor.confirmation_seconds !== null) {
+      details.push(['Confirmation period', monitor.confirmation_seconds === 0 ? 'none, alerts at once' : `${monitor.confirmation_seconds} seconds`]);
+    }
     if (monitor.monitored_regions && monitor.monitored_regions.length > 0) {
       details.push(['Regions', monitor.monitored_regions.join(', ')]);
     }
