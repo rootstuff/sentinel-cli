@@ -298,6 +298,64 @@ function createAdminCommands() {
   }));
 
   withCommonOptions(
+    admin.command('horizon')
+      .description('Horizon as it runs right now: every supervisor per box with its pools, and starved queues')
+  ).action(runAction(async (options) => {
+    const client = new ApiClient(operatorOptions(options));
+    const report = await client.adminHorizon();
+
+    if (options.format === 'json') {
+      console.log(formatOutput(report, 'json'));
+      return;
+    }
+
+    if ((report.starved || []).length) {
+      console.log(chalk.red.bold(`\nStarved queues: ${report.starved.join(', ')}`));
+    } else {
+      console.log(chalk.green.bold('\nNo starved queues.'));
+    }
+    Object.entries(report.boxes || {}).forEach(([box, info]) => {
+      console.log(chalk.cyan.bold(`\n${box}`) + chalk.gray(` ${info.status}, ${info.total_processes} processes`));
+      const table = new Table({ head: ['Supervisor', 'Processes', 'Queues'].map((h) => chalk.cyan(h)) });
+      (info.supervisors || []).forEach((s) => {
+        const pools = Object.entries(s.processes || {}).map(([q, n]) => (n === 0 ? chalk.red(`${q}=0`) : `${q}=${n}`)).join(' ');
+        table.push([s.name.replace(`${box}:`, ''), s.total_processes, pools]);
+      });
+      console.log(table.toString());
+    });
+  }));
+
+  withCommonOptions(
+    admin.command('morning')
+      .description('The daily read in one call: health problems, incidents, blips, failed jobs, freshness, probes, cadence, starved queues')
+      .option('--hours <n>', 'Window in hours (default 14)')
+  ).action(runAction(async (options) => {
+    const client = new ApiClient(operatorOptions(options));
+    const params = {};
+    if (options.hours) params.hours = Number(options.hours);
+    const report = await client.adminMorningRead(params);
+
+    if (options.format === 'json') {
+      console.log(formatOutput(report, 'json'));
+      return;
+    }
+
+    const h = report.health || {};
+    console.log(h.healthy ? chalk.green.bold('\nAll watchdog signals healthy.') : chalk.red.bold(`\n${(h.problems || []).length} unhealthy signal(s): ${(h.problems || []).map((p) => `${p.name} (${p.value})`).join('; ')}`));
+    const inc = report.incidents || {};
+    console.log(chalk.cyan.bold(`\nIncidents, last ${report.window_hours}h: `) + `${inc.total_opened} opened, ${inc.under_a_minute} under a minute`);
+    (inc.by_root_cause || []).slice(0, 8).forEach((g) => console.log(`  ${g.opened}x ${g.root_cause}${g.still_open ? chalk.yellow(` (${g.still_open} open)`) : ''}`));
+    const b = report.blips || {};
+    console.log(chalk.cyan.bold('\nBlips: ') + `${b.total} swallowed by the confirmation period` + chalk.gray(` (${JSON.stringify(b.by_duration)})`));
+    const fj = report.failed_jobs || {};
+    console.log(chalk.cyan.bold('\nFailed jobs: ') + `${fj.total_failures}`);
+    const stale = Object.entries((report.freshness || {}).regions || {}).filter(([, r]) => r.stale > 0).map(([name, r]) => `${name}=${r.stale}`);
+    console.log(chalk.cyan.bold('\nStale monitors: ') + (stale.length ? chalk.red(stale.join(' ')) : chalk.green('none')));
+    console.log(chalk.cyan.bold('Starved queues: ') + ((report.starved_queues || []).length ? chalk.red(report.starved_queues.join(', ')) : chalk.green('none')));
+    console.log(chalk.gray('\nFull detail: --format json\n'));
+  }));
+
+  withCommonOptions(
     admin.command('blips')
       .description('What the confirmation period swallowed: failures that recovered before an incident opened')
       .option('--hours <n>', 'Window in hours (default 24)')

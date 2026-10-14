@@ -379,6 +379,16 @@ class ApiClient {
     return response.data;
   }
 
+  async adminHorizon() {
+    const response = await this.client.get('/admin/horizon');
+    return response.data;
+  }
+
+  async adminMorningRead(params = {}) {
+    const response = await this.client.get('/admin/morning-read', { params });
+    return response.data;
+  }
+
   async adminMonitors(params = {}) {
     const response = await this.client.get('/admin/monitors', { params });
     return response.data;
