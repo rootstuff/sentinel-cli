@@ -118,6 +118,7 @@ Create and update accept the whole monitor field set:
 | `--heartbeat-timezone` | `heartbeat_timezone` | |
 | `--heartbeat-grace` | `heartbeat_grace` | Seconds |
 | `--confirmation-seconds` | `confirmation_seconds` | Seconds the outage must hold across regions before an incident opens (0-300, 0 = at once) |
+| `--recovery-seconds` | `recovery_seconds` | Seconds the target must stay up before the incident closes (0-1800, 0 = at once) |
 
 Examples:
 

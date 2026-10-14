@@ -128,6 +128,9 @@ function formatMonitorDetails(monitor) {
     if (monitor.confirmation_seconds !== undefined && monitor.confirmation_seconds !== null) {
       details.push(['Confirmation period', monitor.confirmation_seconds === 0 ? 'none, alerts at once' : `${monitor.confirmation_seconds} seconds`]);
     }
+    if (monitor.recovery_seconds !== undefined && monitor.recovery_seconds !== null) {
+      details.push(['Recovery period', monitor.recovery_seconds === 0 ? 'none, closes at once' : `${monitor.recovery_seconds} seconds`]);
+    }
     if (monitor.monitored_regions && monitor.monitored_regions.length > 0) {
       details.push(['Regions', monitor.monitored_regions.join(', ')]);
     }

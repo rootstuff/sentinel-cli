@@ -118,7 +118,8 @@ function addMonitorOptions(command) {
     .option('--cron-expression <expression>', 'Expected schedule (cron monitors)')
     .option('--heartbeat-timezone <tz>', 'Timezone the cron schedule runs in')
     .option('--heartbeat-grace <seconds>', 'Grace period before a missed ping counts as down')
-    .option('--confirmation-seconds <seconds>', 'Seconds the outage must hold across regions before an incident opens and alerts go out (0-300, 0 = at once)');
+    .option('--confirmation-seconds <seconds>', 'Seconds the outage must hold across regions before an incident opens and alerts go out (0-300, 0 = at once)')
+    .option('--recovery-seconds <seconds>', 'Seconds the target must stay up before the incident closes and the recovery alert goes out (0-1800, 0 = at once)');
 }
 
 /**
@@ -170,6 +171,7 @@ function payloadFromOptions(options) {
   if (options.heartbeatTimezone !== undefined) data.heartbeat_timezone = options.heartbeatTimezone;
   if (options.heartbeatGrace !== undefined) data.heartbeat_grace = parseInt(options.heartbeatGrace, 10);
   if (options.confirmationSeconds !== undefined) data.confirmation_seconds = parseInt(options.confirmationSeconds, 10);
+  if (options.recoverySeconds !== undefined) data.recovery_seconds = parseInt(options.recoverySeconds, 10);
 
   return data;
 }
