@@ -374,6 +374,11 @@ class ApiClient {
     return response.data;
   }
 
+  async adminBlips(params = {}) {
+    const response = await this.client.get('/admin/blips', { params });
+    return response.data;
+  }
+
   async adminMonitors(params = {}) {
     const response = await this.client.get('/admin/monitors', { params });
     return response.data;

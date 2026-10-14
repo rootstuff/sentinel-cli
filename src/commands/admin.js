@@ -298,6 +298,34 @@ function createAdminCommands() {
   }));
 
   withCommonOptions(
+    admin.command('blips')
+      .description('What the confirmation period swallowed: failures that recovered before an incident opened')
+      .option('--hours <n>', 'Window in hours (default 24)')
+      .option('--limit <n>', 'Max monitors and newest blips to list (default 20)')
+  ).action(runAction(async (options) => {
+    const client = new ApiClient(operatorOptions(options));
+    const params = {};
+    if (options.hours) params.hours = Number(options.hours);
+    if (options.limit) params.limit = Number(options.limit);
+
+    const report = await client.adminBlips(params);
+
+    if (options.format === 'json') {
+      console.log(formatOutput(report, 'json'));
+      return;
+    }
+
+    const d = report.by_duration || {};
+    console.log(chalk.cyan.bold(`\n${report.total} blips in the last ${report.window_hours} hours`) +
+      chalk.gray(` (under the period ${d.under_period || 0}, under 30s ${d.under_30s || 0}, 30-60s ${d['30s_to_60s'] || 0}, over 60s ${d.over_60s || 0})\n`));
+    const table = new Table({ head: ['Monitor', 'Team', 'Blips', 'Longest', 'Period'].map((h) => chalk.cyan(h)) });
+    (report.by_monitor || []).forEach((row) => {
+      table.push([row.url || row.monitor_id, row.team_id, row.blips, row.longest_seconds === null || row.longest_seconds === undefined ? 'under period' : `${row.longest_seconds}s`, `${row.confirmation_seconds}s`]);
+    });
+    console.log(table.toString());
+  }));
+
+  withCommonOptions(
     admin.command('failed-jobs')
       .description('Failed queue jobs grouped by queue and exception')
       .option('--hours <n>', 'Window in hours (default 12)')
