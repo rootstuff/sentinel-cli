@@ -276,6 +276,9 @@ sentinel admin account --email gabriel@vbotickets.com            # or --user-id 
 sentinel admin queues                                            # depth, oldest pending, workers per box
 sentinel admin signups --hours 24                                # new accounts + blocked attempts
 sentinel admin health                                            # the watchdog's signals; exits 1 if any is unhealthy
+sentinel admin blips --hours 24                                  # outages the confirmation period swallowed, by duration, team and monitor
+sentinel admin horizon                                           # every Horizon supervisor per box with its pools; starved queues flagged
+sentinel admin morning                                           # the daily read in one call: health, incidents, blips, failed jobs, freshness, probe nodes, cadence, starved queues
 ```
 
 Every admin command takes `--format json`.
