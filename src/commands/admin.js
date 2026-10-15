@@ -520,6 +520,25 @@ function createAdminCommands() {
       account.tokens.forEach(t => tokens.push([t.id, t.name, (t.abilities || []).join(', '), t.last_used_at || 'never']));
       console.log(tokens.toString());
     }
+    if ((account.connectors || []).length > 0) {
+      const grants = new Table({ head: ['Connector', 'Scopes', 'Granted', 'Last used', 'State'].map(h => chalk.cyan(h)), colWidths: [16, 14, 27, 27, 9] });
+      account.connectors.forEach(c => grants.push([c.client, (c.scopes || []).join(', '), c.granted_at, c.last_used_at || 'never', c.revoked ? 'revoked' : (c.active ? 'active' : 'expired')]));
+      console.log(grants.toString());
+    }
+    if (account.mcp_usage) {
+      const m = account.mcp_usage;
+      if (m.requests === 0) {
+        console.log('MCP: no requests logged');
+      } else {
+        const servers = Object.entries(m.servers || {}).map(([name, n]) => `${name} ${n}`).join(', ');
+        console.log(`MCP: ${m.requests} requests (${servers}), first ${m.first_at}, last ${m.last_at}`);
+        if ((m.tools || []).length > 0) {
+          const tools = new Table({ head: ['Server', 'Tool', 'Calls', 'Last call'].map(h => chalk.cyan(h)), colWidths: [16, 32, 7, 27] });
+          m.tools.forEach(t => tools.push([t.server, t.tool, t.calls, t.last_at]));
+          console.log(tools.toString());
+        }
+      }
+    }
     if (account.signup) {
       const s = account.signup;
       console.log(`Signup: ${s.outcome}, source ${s.utm_source || '-'}, landed on ${s.landing_path || '-'}, from ${s.country || '-'}, form ${s.form_ms != null ? `${s.form_ms}ms` : '-'}`);
