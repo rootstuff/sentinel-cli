@@ -82,7 +82,7 @@ sentinel monitors pause <id>
 sentinel monitors unpause <id>
 ```
 
-`--interval` is in minutes. `0.5` means every 30 seconds; the floor depends on your plan.
+`--interval` is in minutes. `0.5` means every 30 seconds and `0.25` every 15 seconds. The floor depends on your plan.
 
 Create and update accept the whole monitor field set:
 

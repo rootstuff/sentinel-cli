@@ -90,7 +90,7 @@ function addMonitorOptions(command) {
   return command
     .option('--url <url>', 'URL to monitor (bare host for ping/port monitors)')
     .option('--name <name>', 'Friendly name (required for heartbeat/cron monitors)')
-    .option('--interval <minutes>', 'Check interval in minutes; 0.5 = every 30 seconds (plan floor applies)')
+    .option('--interval <minutes>', 'Check interval in minutes; 0.5 = every 30 seconds, 0.25 = every 15 seconds (plan floor applies)')
     .option('--check-types <types>', 'Comma-separated sub-checks: ssl,dns,domain,keyword,json,lighthouse,payment')
     .option('--regions <codes>', 'Comma-separated regions to check from: us-east,us-west,eu-central,ap-southeast (older names like ash still work; default all)')
     .option('--group-id <id>', 'Monitor group ID, or "none" to ungroup')

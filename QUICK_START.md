@@ -35,7 +35,7 @@ sentinel monitors unpause <id>
 sentinel monitors delete <id> --yes
 ```
 
-`--interval` is in minutes (`0.5` = 30 seconds).
+`--interval` is in minutes (`0.5` = 30 seconds, `0.25` = 15 seconds on Business).
 
 ## Groups
 
