@@ -91,7 +91,7 @@ Create and update accept the whole monitor field set:
 | `--type` | `monitor_type` | http, ping, port, heartbeat, cron (create only) |
 | `--url` | `url` | Full URL for http; bare host for ping/port |
 | `--name` | `friendly_name` | Required for heartbeat and cron monitors |
-| `--interval` | `check_interval` | Minutes, 0.5 to 60 |
+| `--interval` | `check_interval` | Minutes, 0.25 to 60 (plan floor applies) |
 | `--check-types` | `check_types` | Comma list: ssl,dns,domain,keyword,json,lighthouse,payment |
 | `--regions` | `monitored_regions` | Comma list: us-east,us-west,eu-central,ap-southeast (older ash,pdx,nbg,sin still work) |
 | `--group-id` | `group_id` | Group ID, or `none` to ungroup |
