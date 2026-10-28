@@ -4,6 +4,7 @@ const inquirer = require('inquirer');
 const config = require('../utils/config');
 const { formatOutput, formatKeyValue } = require('../utils/formatter');
 const ApiClient = require('../api/client');
+const { parseBooleanFlag } = require('../utils/command');
 
 function formatChannelsTable(channels) {
   const Table = require('cli-table3');
@@ -187,7 +188,7 @@ function createNotificationsCommands() {
   notifications
     .command('update <channel>')
     .description('Update a notification channel')
-    .option('--enabled <bool>', 'Enable or disable the channel')
+    .option('--enabled <bool>', 'Enable or disable the channel (true/false, yes/no, 1/0, on/off)')
     .option('--webhook-url <url>', 'Slack webhook URL')
     .option('--phone <number>', 'Phone number for SMS')
     .option('--format <format>', 'Output format (table, json)', 'table')
@@ -198,7 +199,7 @@ function createNotificationsCommands() {
         const data = {};
 
         if (options.enabled !== undefined) {
-          data.enabled = options.enabled === 'true';
+          data.enabled = parseBooleanFlag(options.enabled, '--enabled');
         }
         if (options.webhookUrl) data.webhook_url = options.webhookUrl;
         if (options.phone) data.phone_number = options.phone;

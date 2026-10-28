@@ -55,6 +55,20 @@ test('notifications get, create, update, enable, disable, delete, test', async (
   assertRequest(stub.lastRequest(), 'PUT', '/api/v1/notification-channels/sms');
   assert.deepEqual(stub.lastRequest().body, { enabled: false, phone_number: '+15555550100' });
 
+  // Commander hands --enabled over as the typed string. Any usual spelling
+  // of a boolean must count, and an unknown one must refuse rather than
+  // silently disable the channel (only the exact word "true" used to enable).
+  for (const spelling of ['yes', '1', 'TRUE', 'on']) {
+    result = await runCli(['notifications', 'update', 'sms', '--enabled', spelling], { stub });
+    assert.equal(result.code, 0, result.stderr);
+    assert.deepEqual(stub.lastRequest().body, { enabled: true }, `--enabled ${spelling}`);
+  }
+  const before = stub.requests.length;
+  result = await runCli(['notifications', 'update', 'sms', '--enabled', 'maybe'], { stub });
+  assert.notEqual(result.code, 0, 'an unrecognised --enabled value must fail');
+  assert.match(result.stderr + result.stdout, /--enabled must be true or false/);
+  assert.equal(stub.requests.length, before, 'nothing is sent for an unrecognised value');
+
   result = await runCli(['notifications', 'enable', 'email'], { stub });
   assert.equal(result.code, 0, result.stderr);
   assert.deepEqual(stub.lastRequest().body, { enabled: true });
