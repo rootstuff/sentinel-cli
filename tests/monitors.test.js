@@ -373,3 +373,57 @@ test('monitors channels accept in_app and get shows the stored database key as i
   assert.deepEqual(stub.lastRequest().body.notification_settings, { channels: { in_app: ['critical'] } });
   assert.match(result.stdout, /in_app=critical/);
 });
+
+test('monitors create sends bearer auth as auth_type with the token in auth_password', async () => {
+  stub.setRoutes({ 'POST /api/v1/monitors': { status: 201, body: monitor } });
+
+  const result = await runCli([
+    'monitors', 'create', '--url', 'https://api.example.com/health', '--auth-type', 'bearer', '--auth-token', 'SG.tok'
+  ], { stub });
+
+  assert.equal(result.code, 0, result.stderr);
+  assert.deepEqual(stub.lastRequest().body, {
+    monitor_type: 'http',
+    url: 'https://api.example.com/health',
+    auth_type: 'bearer',
+    auth_password: 'SG.tok'
+  });
+});
+
+test('monitors update --auth-type basic sends the username and password', async () => {
+  stub.setRoutes({
+    'GET /api/v1/monitors/42': { body: monitor },
+    'PUT /api/v1/monitors/42': { body: monitor }
+  });
+
+  const result = await runCli([
+    'monitors', 'update', '42', '--auth-type', 'basic', '--auth-username', 'ops', '--auth-password', 'pw'
+  ], { stub });
+
+  assert.equal(result.code, 0, result.stderr);
+  assert.deepEqual(stub.requests[1].body, {
+    url: 'https://example.com',
+    check_types: ['ssl'],
+    auth_type: 'basic',
+    auth_username: 'ops',
+    auth_password: 'pw'
+  });
+});
+
+test('monitors update --auth-type none clears all three auth fields', async () => {
+  stub.setRoutes({
+    'GET /api/v1/monitors/42': { body: monitor },
+    'PUT /api/v1/monitors/42': { body: monitor }
+  });
+
+  const result = await runCli(['monitors', 'update', '42', '--auth-type', 'none', '--auth-token', 'ignored'], { stub });
+
+  assert.equal(result.code, 0, result.stderr);
+  assert.deepEqual(stub.requests[1].body, {
+    url: 'https://example.com',
+    check_types: ['ssl'],
+    auth_type: null,
+    auth_username: null,
+    auth_password: null
+  });
+});

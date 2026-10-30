@@ -101,6 +101,10 @@ function addMonitorOptions(command) {
     .option('--timeout <seconds>', 'Request timeout in seconds (1-60)')
     .option('--headers <json>', 'Request headers as a JSON object, e.g. \'{"Authorization":"Bearer x"}\'')
     .option('--body <text>', 'Request body for POST/PUT/PATCH')
+    .option('--auth-type <type>', 'HTTP authentication for the check: basic, bearer, or none to remove it')
+    .option('--auth-username <user>', 'Username for basic auth')
+    .option('--auth-password <secret>', 'Password for basic auth, or the token for bearer (stored encrypted)')
+    .option('--auth-token <token>', 'Token for bearer auth (same as --auth-password)')
     .option('--ssl-threshold <days>', 'Alert when the certificate expires within this many days')
     .option('--domain-threshold <days>', 'Alert when the domain registration expires within this many days')
     .option('--slow-response-threshold <ms>', 'Flag responses slower than this (100-60000 ms)')
@@ -143,6 +147,18 @@ function payloadFromOptions(options) {
   if (options.timeout !== undefined) data.request_timeout = parseInt(options.timeout, 10);
   if (options.headers !== undefined) data.request_headers = parseJsonFlag(options.headers, '--headers');
   if (options.body !== undefined) data.request_body = options.body;
+  // "none" clears all three; the API ignores auth_username for bearer, so
+  // the token always rides in auth_password whichever flag carried it.
+  if (options.authType === 'none') {
+    data.auth_type = null;
+    data.auth_username = null;
+    data.auth_password = null;
+  } else {
+    if (options.authType !== undefined) data.auth_type = options.authType;
+    if (options.authUsername !== undefined) data.auth_username = options.authUsername;
+    const secret = options.authToken ?? options.authPassword;
+    if (secret !== undefined) data.auth_password = secret;
+  }
   if (options.sslThreshold !== undefined) data.ssl_expiry_threshold = parseInt(options.sslThreshold, 10);
   if (options.domainThreshold !== undefined) data.domain_expiry_threshold = parseInt(options.domainThreshold, 10);
   if (options.slowResponseThreshold !== undefined) data.slow_response_threshold = parseInt(options.slowResponseThreshold, 10);

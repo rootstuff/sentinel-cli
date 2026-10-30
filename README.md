@@ -101,6 +101,9 @@ Create and update accept the whole monitor field set:
 | `--timeout` | `request_timeout` | Seconds, 1 to 60 |
 | `--headers` | `request_headers` | JSON object |
 | `--body` | `request_body` | String |
+| `--auth-type` | `auth_type` | `basic`, `bearer`, or `none` to remove auth |
+| `--auth-username` | `auth_username` | Basic auth only |
+| `--auth-password` / `--auth-token` | `auth_password` | The password for basic, the token for bearer; stored encrypted |
 | `--ssl-threshold` | `ssl_expiry_threshold` | Days |
 | `--domain-threshold` | `domain_expiry_threshold` | Days |
 | `--slow-response-threshold` | `slow_response_threshold` | Milliseconds |

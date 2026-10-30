@@ -58,10 +58,15 @@ sentinel monitors create --url https://example.com --interval 1
 sentinel monitors create --url https://example.com --interval 5 \
   --check-types ssl,dns --regions us-east,eu-central --ssl-threshold 30
 
-# POST with headers and a body, accept 2xx only
+# POST with a bearer token (stored encrypted) and a body, accept 2xx only
 sentinel monitors create --url https://api.example.com/ping --method POST \
-  --headers '{"Authorization":"Bearer abc","Content-Type":"application/json"}' \
+  --auth-type bearer --auth-token abc \
+  --headers '{"Content-Type":"application/json"}' \
   --body '{"ping":true}' --accepted-status-codes 2xx
+
+# Basic auth, or remove auth again
+sentinel monitors update 123 --auth-type basic --auth-username ops --auth-password s3cret
+sentinel monitors update 123 --auth-type none
 
 # Keyword check
 sentinel monitors create --url https://example.com \
